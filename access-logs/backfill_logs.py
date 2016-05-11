@@ -55,12 +55,12 @@ for line in open(sys.argv[1]):
         
         logtime = conv_log_date(parts[3])
 
-        result = db_engine.execute("select  id, date_fetched, success, user_id from esgf_node_manager.access_logging where url = 'http://aims3.llnl.gov" + url +  "' and success = True and xfer_size = -1")
+        result = db_engine.execute("select  id, date_fetched, success, user_id, data_size from esgf_node_manager.access_logging where url = 'http://aims3.llnl.gov" + url +  "' and success = True and xfer_size = -1")
         
         
         entry_id = 0
         delta = 0
-
+        d_sz = 0
 #        print url
 
         arr = []
@@ -68,9 +68,8 @@ for line in open(sys.argv[1]):
 
             entry_id = row[0]
             delta = abs(int(row[1]) - logtime)
-
-            
-            arr.append([delta, entry_id, sz])
+            d_sz = row[4]
+            arr.append([delta, entry_id, sz, d_sz])
 
         if len(arr) > 0:
             sarr= sorted(arr, key = lambda entry: entry[0])
@@ -78,9 +77,12 @@ for line in open(sys.argv[1]):
             if (sarr[0][0] < 16000):
                 sz = sarr[0][2]
                 entry_id = sarr[0][1]
-            
-                print "UPDATE esgf_node_manager.access_logging SET xfer_size =",sz," WHERE id =", entry_id, ";"
+                d_sz = sarr[0][3]
 
+                print "UPDATE esgf_node_manager.access_logging SET xfer_size =",sz," WHERE id =", entry_id, ";"
+                if sz < d_sz:
+                    print "UPDATE esgf_node_manager.access_logging SET success = 'f' WHERE id =", entry_id, ";"
+                
 
 
 
