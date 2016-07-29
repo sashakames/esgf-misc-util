@@ -6,6 +6,8 @@ project_in = sys.argv[1]
 base_path_in = sys.argv[2]
 
 
+# TODO : hardcoded values to be replaced by input .json files
+
 facet_dict = { "activity": "activity_id", 
                "institute": "institution_id",
                "model": "source_id", 
@@ -15,6 +17,35 @@ facet_dict = { "activity": "activity_id",
                "variable": "", 
                "grid_label": "grid_label",
                "version": "" }
+
+
+DRS_list = [ "activity",  
+               "institute",
+               "model",
+               "experiment",
+               "ensemble",
+               "cmor_table",
+               "variable",
+               "grid_label",
+               "version" ]
+
+
+delimited_facets = { "realm": "space"}
+
+def print_delimited():
+
+    for x in delimited_facets:
+
+        print x + "_delimiter = " + delimited_facets[x]
+
+
+
+
+extract_global_attrs = [  "realm", "frequency", "product", "mip_era", "grid_resolution" ]
+
+def print_extract_attrs():
+
+    print "extract_global_attrs = " + ', '.join(extract_global_attrs)
 
 
 def gen_models_table_entries_and_print(base_path, project):
@@ -54,34 +85,36 @@ def gen_models_table_entries_and_print(base_path, project):
 
         outarr = [project, key, " ", ', '.join(inst_arr) + ", " + src_str]
 
-        outf.write(' | '.join(outarr) + "\n")
+        outf.write('  ' +  ' | '.join(outarr) + "\n")
     outf.close()
     
 
-def get_facet_list(first_item):
+def get_facet_list(first_item, vers):
 
     outarr = [first_item]
 
-    for x in facet_dict:
+    for x in DRS_list:
         
+        if (vers or (x != "version")):
 
-        outarr.append("%(" + x + ")x")
+            outarr.append("%(" + x + ")s")
 
+    return outarr
 
 def print_directory_format():
 
-    outarr =     get_facet_list("/%(root)s/%(project)s")
+    outarr = get_facet_list("/%(root)s/%(project)s", True)
 
 
     print "directory_format = " + '/'.join(outarr)
 
 
 
-def print_dataset_id_fmt(project):
+def print_dataset_id_fmt():
     
-    outarr = get_facet_list("%(project)s")
+    outarr = get_facet_list("%(project)s", False)
     
-    print "directory_format = " + '/'.join(outarr)
+    print "dataset_id_format = " + '.'.join(outarr)
 
 
 def write_options_list(base_path, project, facet_in, facet_out):
@@ -102,7 +135,7 @@ def write_experiment_options(base_path, project):
     print "experiment_options ="
     for key in jobj:
 
-        print project + " | " + key + " | " + jobj[key]["description"]
+        print "  " +  project + " | " + key + " | " + jobj[key]["description"].replace('%', "pct")
 
 
 def write_categories(ext_file):
@@ -150,7 +183,7 @@ print "[project:" + project_in + "]"
 write_categories(sys.argv[3])
 
 print "category_defaults ="
-print "    project | cmip5"
+print "    project | CMIP6"
 
 
 gen_models_table_entries_and_print(base_path_in, project_in)
@@ -175,6 +208,11 @@ print "dataset_name_format = project=%(project_description)s, model=%(model_desc
 
 print "ensemble_pattern = r%(digit)si%(digit)sp%(digit)sf%(digit)s"
 
+print_directory_format()
+print_dataset_id_fmt()
+
+
+
 print "las_configure = true" 
 
 print "thredds_exclude_variables = a, a_bnds, alev1, alevel, alevhalf, alt40, b, b_bnds, basin, bnds, bounds_lat, bounds_lon, dbze, depth, depth0m, depth100m, depth_bnds, geo_region, height, height10m, height2m, lat, lat_bnds, latitude, latitude_bnds, layer, lev, lev_bnds, location, lon, lon_bnds, longitude, longitude_bnds, olayer100m, olevel, oline, p0, p220, p500, p560, p700, p840, plev, plev3, plev7, plev8, plev_bnds, plevs, pressure1, region, rho, scatratio, sdepth, sdepth1, sza5, tau, tau_bnds, time, time1, time2, time_bnds, vegtype"
@@ -185,3 +223,8 @@ print "variable_per_file = true"
 
 print "version_by_date = true"
 
+print "min_cmor_version = 3.1.2"  
+
+print_delimited()
+
+print_extract_attrs()
