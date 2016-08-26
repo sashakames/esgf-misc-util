@@ -204,7 +204,7 @@ for f_out in ["activity", "cmor_table", "grid_label"]:
 
 
 
-print "dataset_name_format = project=%(project_description)s, model=%(model_description)s, experiment=%(experiment_description)s, time_frequency=%(time_frequency)s, modeling realm=%(realm)s, ensemble=%(ensemble)s, version=%(version)s"
+print "dataset_name_format = project=%(project_description)s, model=%(model_description)s, experiment=%(experiment_description)s, time frequency=%(frequency)s, modeling realm=%(realm)s, ensemble=%(ensemble)s, version=%(version)s"
 
 print "ensemble_pattern = r%(digit)si%(digit)sp%(digit)sf%(digit)s"
 
@@ -224,6 +224,14 @@ print "variable_per_file = true"
 print "version_by_date = true"
 
 print "min_cmor_version = 3.1.2"  
+
+print "project_handler_name = cmip6_builtin"
+
+print "realm_delimiter = space"
+
+print "min_cf_version = 1.6"
+
+print "cmor_table_path = /usr/local/src/esgf/workbench/esg/cmor/TestTables"
 
 print_delimited()
 
