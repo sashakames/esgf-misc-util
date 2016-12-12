@@ -2,6 +2,14 @@ import sys
 import json
 
 
+if len(sys.argv) == 1:
+  print "Usage:"
+  print  "     python CV2ini.py <project-name> <base-path> > <output-file>"
+  print
+  print "where <base-path> is the location of the CV repo"
+  exit(0)
+
+
 project_in = sys.argv[1]
 base_path_in = sys.argv[2]
 
@@ -138,7 +146,7 @@ def write_experiment_options(base_path, project):
         print "  " +  project + " | " + key + " | " + jobj[key]["description"].replace('%', "pct")
 
 
-def write_categories(ext_file):
+def write_categories():
 
 #    f = open(ext_file)
 
@@ -180,7 +188,7 @@ print "[project:" + project_in + "]"
 
 
 
-write_categories(sys.argv[3])
+write_categories()
 
 print "category_defaults ="
 print "    project | CMIP6"
@@ -223,15 +231,15 @@ print "variable_per_file = true"
 
 print "version_by_date = true"
 
-print "min_cmor_version = 3.1.2"  
+print "min_cmor_version = 3.2.0"  
 
-print "project_handler_name = cmip6_builtin"
+print "project_handler_name = cmip6_handler:CMIP6Handler"
 
 print "realm_delimiter = space"
 
 print "min_cf_version = 1.6"
 
-print "cmor_table_path = /usr/local/src/esgf/workbench/esg/cmor/TestTables"
+print "cmor_table_path = /usr/local/"
 
 print_delimited()
 
