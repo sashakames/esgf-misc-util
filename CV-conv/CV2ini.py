@@ -62,32 +62,35 @@ def gen_models_table_entries_and_print(base_path, project):
     f=open(base_path + "/" + project + "_source_id.json")
 
     sidjobj = json.loads(f.read())
-
+    f.close()
 
     f=open(base_path + "/" + project + "_institution_id.json")
+    
 
     insts = json.loads(f.read())
+    f.close()
 
     outf = open("esgcet_models_table.part.txt", "w")
 
-    print "model_options = " + ', '.join(sidjobj.keys())
+    print "model_options = " + ', '.join(sidjobj["source_id"].keys())
 
-    print "institute_options = " + ', '.join(insts.keys())
+    print "institute_options = " + ', '.join(insts["institution_id"].keys())
 
-    for key in sidjobj:
+    for key in sidjobj["source_id"].keys():
 
-        child = sidjobj[key]
 
-        src_str = child["source"]
+        child = sidjobj["source_id"][key]
+
+        src_str = child["label_extended"]
 
         inst_keys = child["institution_id"]
-
+          
         
         inst_arr = []
 
         for n in inst_keys:
 
-            inst_arr.append(insts[n])
+            inst_arr.append(insts["institution_id"][n])
 
 
 
@@ -129,7 +132,7 @@ def write_options_list(base_path, project, facet_in, facet_out):
 
     f=open(base_path + "/" + project + "_" + facet_in + ".json")
 
-    jobj = json.loads(f.read())
+    jobj = json.loads(f.read())[facet_in]
     
     print facet_out + "_options = " + ', '.join(jobj)
 
@@ -138,7 +141,7 @@ def write_experiment_options(base_path, project):
 
     f=open(base_path + "/" + project + "_experiment_id.json")
     
-    jobj = json.loads(f.read())
+    jobj = json.loads(f.read())["experiment_id"]
 
     print "experiment_options ="
     for key in jobj:
