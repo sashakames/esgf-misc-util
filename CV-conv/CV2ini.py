@@ -100,7 +100,7 @@ def gen_models_table_entries_and_print(base_path, project):
 
 
 
-        outarr = [project, key, " ", ', '.join(inst_arr) + ", " + src_str]
+        outarr = [project.lower(), key, " ", ', '.join(inst_arr) + ", " + src_str]
 
         outf.write('  ' +  ' | '.join(outarr) + "\n")
     outf.close()
