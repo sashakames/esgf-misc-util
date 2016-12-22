@@ -20,11 +20,12 @@ facet_dict = { "activity": "activity_id",
                "institute": "institution_id",
                "model": "source_id", 
                "experiment": "", 
-               "ensemble": "", 
+               "ensemble": "variant_label", 
                "cmor_table": "table_id", 
                "variable": "", 
                "grid_label": "grid_label",
-               "version": "" }
+               "version": "",
+               "model_cohort": "" }
 
 
 DRS_list = [ "activity",  
@@ -49,13 +50,15 @@ def print_delimited():
 
 
 
-extract_global_attrs = [  "realm", "frequency", "product", "mip_era", "grid_resolution" ]
+extract_global_attrs = [  "realm", "frequency", "product", "mip_era", "nominal_resolution", "source_type", "grid", "branch_method"  ]
 
 def print_extract_attrs():
 
     print "extract_global_attrs = " + ', '.join(extract_global_attrs)
 
-
+"""
+Also handles the cohort map generation
+"""
 def gen_models_table_entries_and_print(base_path, project):
     
 
@@ -76,16 +79,19 @@ def gen_models_table_entries_and_print(base_path, project):
 
     print "institute_options = " + ', '.join(insts["institution_id"].keys())
 
+    print "model_cohort_map = (model : model_cohort)"
+
     for key in sidjobj["source_id"].keys():
 
-
         child = sidjobj["source_id"][key]
-
         src_str = child["label_extended"]
-
         inst_keys = child["institution_id"]
+        cohorts = " ".join(child["cohort"])
           
-        
+        if len(cohorts) < 1:
+          cohorts = "none"
+            
+        print "   " + key + " | " + cohorts
         inst_arr = []
 
         for n in inst_keys:
@@ -98,7 +104,7 @@ def gen_models_table_entries_and_print(base_path, project):
 
         outf.write('  ' +  ' | '.join(outarr) + "\n")
     outf.close()
-    
+    print
 
 def get_facet_list(first_item, vers):
 
@@ -146,7 +152,7 @@ def write_experiment_options(base_path, project):
     print "experiment_options ="
     for key in jobj:
 
-        print "  " +  project + " | " + key + " | " + jobj[key]["description"].replace('%', "pct")
+        print "  " +  project.lower() + " | " + key + " | " + jobj[key]["description"].replace('%', "pct")
 
 
 def write_categories():
@@ -187,15 +193,17 @@ def write_categories():
 
     print "  description  | text | false | false | 99"
 
-print "[project:" + project_in + "]"
+print "[project:" + project_in.lower() + "]"
 
 
 
 write_categories()
 
 print "category_defaults ="
-print "    project | CMIP6"
+print "    project | cmip6"
 
+
+print "maps = model_cohort_map"
 
 gen_models_table_entries_and_print(base_path_in, project_in)
 write_experiment_options(base_path_in, project_in)
