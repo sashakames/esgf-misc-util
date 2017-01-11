@@ -1,7 +1,6 @@
 import sys
 import json
 
-
 if len(sys.argv) == 1:
   print "Usage:"
   print  "     python CV2ini.py <project-name> <base-path> > <output-file>"
@@ -22,10 +21,8 @@ facet_dict = { "activity": "activity_id",
                "experiment": "", 
                "ensemble": "variant_label", 
                "cmor_table": "table_id", 
-               "variable": "", 
-               "grid_label": "grid_label",
-               "version": "",
-               "model_cohort": "" }
+               "grid_label": "grid_label" }
+
 
 
 DRS_list = [ "activity",  
@@ -79,7 +76,7 @@ def gen_models_table_entries_and_print(base_path, project):
 
     print "institute_options = " + ', '.join(insts["institution_id"].keys())
 
-    print "model_cohort_map = (model : model_cohort)"
+    print "model_cohort_map = map(model : model_cohort)"
 
     for key in sidjobj["source_id"].keys():
 
@@ -131,7 +128,7 @@ def print_dataset_id_fmt():
     
     outarr = get_facet_list("%(project)s", False)
     
-    print "dataset_id_format = " + '.'.join(outarr)
+    print "dataset_id = " + '.'.join(outarr)
 
 
 def write_options_list(base_path, project, facet_in, facet_out):
@@ -244,7 +241,7 @@ print "version_by_date = true"
 
 print "min_cmor_version = 3.2.0"  
 
-print "project_handler_name = cmip6_handler:CMIP6Handler"
+print "handler = esgcet.config.cmip6_handler:CMIP6Handler"
 
 print "realm_delimiter = space"
 
