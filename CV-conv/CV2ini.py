@@ -163,27 +163,31 @@ def write_categories():
     alt_forms = []
 
 
+    omit_list = [ "variable", "version"]
+
     for i, facet_out in enumerate(facet_dict):
+
+        if not facet_out in omit_list:
         
-        type_str = "enum"
+          type_str = "enum"
 
-        if facet_out == "ensemble":
-            type_str = "string"
+          if facet_out == "ensemble":
+              type_str = "string"
 
-        outarr = [facet_out, type_str, "true", "true" , str(i + 1)  ]
+          outarr = [facet_out, type_str, "true", "true" , str(i + 1)  ]
         
-        conv = facet_dict[facet_out]
+          conv = facet_dict[facet_out]
 
-        if len(conv) > 0 and conv != facet_out:
-            alt_forms.append(conv)
+          if len(conv) > 0 and conv != facet_out:
+              alt_forms.append(conv)
 
 
 
-        print "   " + ' | '.join(outarr)
+          print "   " + ' | '.join(outarr)
 
     base = len(facet_dict) + 1
 
-    for i, facet_out in enumerate(alt_forms):
+    for i, facet_out in enumerate(alt_forms + extract_global_attrs):
     
         outarr = [facet_out, "string", "false", "true" , str(i + base)  ]
         print "   " + ' | '.join(outarr)
@@ -219,7 +223,7 @@ for f_out in ["activity", "cmor_table", "grid_label"]:
     write_options_list(base_path_in, project_in, f_in, f_out)    
 
 
-
+print "filename_format = %(variable)s_%(cmor_table)s_%(model)s_%(experiment)s_%(ensemble)s_%(grid_label)s_[%(period_start)s-%(period_end)s].nc"
 print "dataset_name_format = project=%(project_description)s, model=%(model_description)s, experiment=%(experiment_description)s, time frequency=%(frequency)s, modeling realm=%(realm)s, ensemble=%(ensemble)s, version=%(version)s"
 
 print "ensemble_pattern = r%(digit)si%(digit)sp%(digit)sf%(digit)s"
@@ -239,7 +243,7 @@ print "variable_per_file = true"
 
 print "version_by_date = true"
 
-print "min_cmor_version = 3.2.0"  
+print "min_cmor_version = 3.2.3"  
 
 print "handler = esgcet.config.cmip6_handler:CMIP6Handler"
 
@@ -247,7 +251,7 @@ print "realm_delimiter = space"
 
 print "min_cf_version = 1.6"
 
-print "cmor_table_path = /usr/local/"
+print "cmor_table_path = /usr/local/cmip6-cmor-tables/Tables"
 
 print_delimited()
 
