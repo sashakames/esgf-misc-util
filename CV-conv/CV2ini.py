@@ -3,7 +3,7 @@ import json
 
 if len(sys.argv) == 1:
   print "Usage:"
-  print  "     python CV2ini.py <project-name> <base-path> > <output-file>"
+  print  "     python CV2ini.py <project-name> <base-path> <static-content> > <output-file>"
   print
   print "where <base-path> is the location of the CV repo"
   exit(0)
@@ -25,7 +25,8 @@ facet_dict = { "activity": "activity_id",
 
 
 
-DRS_list = [ "activity",  
+DRS_list = [ "mip_era", 
+            "activity",  
                "institute",
                "model",
                "experiment",
@@ -38,6 +39,12 @@ DRS_list = [ "activity",
 
 delimited_facets = { "realm": "space"}
 
+def load_and_print_static():
+
+  f = open(sys.argv[3])
+  for line in f:
+    print line.rstrip()
+
 def print_delimited():
 
     for x in delimited_facets:
@@ -47,7 +54,7 @@ def print_delimited():
 
 
 
-extract_global_attrs = [  "realm", "frequency", "product", "mip_era", "nominal_resolution", "source_type", "grid", "branch_method"  ]
+extract_global_attrs = [  "realm", "frequency", "product",  "nominal_resolution", "source_type", "grid", "branch_method"  ]
 
 def print_extract_attrs():
 
@@ -105,7 +112,11 @@ def gen_models_table_entries_and_print(base_path, project):
 
 def get_facet_list(first_item, vers):
 
-    outarr = [first_item]
+    outarr = []
+    if len(first_item) > 0:
+
+      outarr = [first_item]
+ 
 
     for x in DRS_list:
         
@@ -117,7 +128,7 @@ def get_facet_list(first_item, vers):
 
 def print_directory_format():
 
-    outarr = get_facet_list("/%(root)s/%(project)s", True)
+    outarr = get_facet_list("/%(root)s", True)
 
 
     print "directory_format = " + '/'.join(outarr)
@@ -126,7 +137,7 @@ def print_directory_format():
 
 def print_dataset_id_fmt():
     
-    outarr = get_facet_list("%(project)s", False)
+    outarr = get_facet_list("", False)
     
     print "dataset_id = " + '.'.join(outarr)
 
@@ -196,19 +207,12 @@ def write_categories():
 
 print "[project:" + project_in.lower() + "]"
 
-
+load_and_print_static()
 
 write_categories()
 
-print "category_defaults ="
-print "    project | cmip6"
-
-
-print "maps = model_cohort_map"
-
 gen_models_table_entries_and_print(base_path_in, project_in)
 write_experiment_options(base_path_in, project_in)
-
 
 # TODO get options list
 for f_out in ["activity", "cmor_table", "grid_label"]:
@@ -223,36 +227,7 @@ for f_out in ["activity", "cmor_table", "grid_label"]:
     write_options_list(base_path_in, project_in, f_in, f_out)    
 
 
-print "filename_format = %(variable)s_%(cmor_table)s_%(model)s_%(experiment)s_%(ensemble)s_%(grid_label)s_[%(period_start)s-%(period_end)s].nc"
-print "dataset_name_format = project=%(project_description)s, model=%(model_description)s, experiment=%(experiment_description)s, time frequency=%(frequency)s, modeling realm=%(realm)s, ensemble=%(ensemble)s, version=%(version)s"
-
-print "ensemble_pattern = r%(digit)si%(digit)sp%(digit)sf%(digit)s"
-
 print_directory_format()
 print_dataset_id_fmt()
-
-
-
-print "las_configure = true" 
-
-print "thredds_exclude_variables = a, a_bnds, alev1, alevel, alevhalf, alt40, b, b_bnds, basin, bnds, bounds_lat, bounds_lon, dbze, depth, depth0m, depth100m, depth_bnds, geo_region, height, height10m, height2m, lat, lat_bnds, latitude, latitude_bnds, layer, lev, lev_bnds, location, lon, lon_bnds, longitude, longitude_bnds, olayer100m, olevel, oline, p0, p220, p500, p560, p700, p840, plev, plev3, plev7, plev8, plev_bnds, plevs, pressure1, region, rho, scatratio, sdepth, sdepth1, sza5, tau, tau_bnds, time, time1, time2, time_bnds, vegtype"
-
-print "variable_locate = ps, ps_"
-
-print "variable_per_file = true"
-
-print "version_by_date = true"
-
-print "min_cmor_version = 3.2.3"  
-
-print "handler = esgcet.config.cmip6_handler:CMIP6Handler"
-
-print "realm_delimiter = space"
-
-print "min_cf_version = 1.6"
-
-print "cmor_table_path = /usr/local/cmip6-cmor-tables/Tables"
-
 print_delimited()
-
 print_extract_attrs()
